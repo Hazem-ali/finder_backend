@@ -34,7 +34,6 @@ class User(AbstractUser):
     phone = models.CharField(max_length=50)
     password = models.CharField(max_length=255)
     gender = models.CharField(max_length=1)
-    address = models.CharField(max_length=255)
 
     username = None
 

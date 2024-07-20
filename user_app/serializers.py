@@ -14,7 +14,6 @@ class UserSerializer(ModelSerializer):
             "email",
             "phone",
             "gender",
-            "address",
             "password",
         ]
 
