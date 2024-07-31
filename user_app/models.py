@@ -29,11 +29,18 @@ class User(AbstractUser):
 
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
-    dob = models.DateField(auto_now=False, auto_now_add=False, null=True)
+    phone = models.CharField(max_length=50, unique=True)
     email = models.EmailField(max_length=254, unique=True)
-    phone = models.CharField(max_length=50)
-    password = models.CharField(max_length=255)
+
+    # TODO make is_supervisor default to be False
+    is_supervisor = models.BooleanField(default=True)
+
+    national_id = models.CharField(max_length=14)
+    dob = models.DateField(auto_now=False, auto_now_add=False, null=True)
+    photo = models.ImageField()
     gender = models.CharField(max_length=1)
+
+    password = models.CharField(max_length=255)
 
     username = None
 
@@ -41,9 +48,9 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
-    
+
     def get_name(self):
         return f"{self.first_name} {self.last_name}"
-        
+
     def __str__(self) -> str:
         return self.get_name()

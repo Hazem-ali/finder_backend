@@ -7,3 +7,4 @@ PyJWT==2.0.1
 Faker==6.6.1
 djangorestframework-simplejwt
 drf-yasg
+Pillow

@@ -1,0 +1,6 @@
+finder_app/models.py
+# TODO remove null=True in informer
+# photo = models.FileField( upload_to='files/', blank=True, null=True)
+
+user_app/models.py
+# TODO make is_supervisor default to be False
