@@ -42,11 +42,12 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "user_app",
     "drf_yasg",
-    # "corsheaders",
+    "corsheaders",
     "finder_app",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -54,7 +55,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
+    'django.middleware.common.CommonMiddleware',
 ]
 
 ROOT_URLCONF = "finder_backend.urls"
@@ -149,7 +150,7 @@ REST_FRAMEWORK = {
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
-
+CORS_ALLOW_CREDENTIALS = True
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'

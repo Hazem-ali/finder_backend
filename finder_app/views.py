@@ -22,7 +22,7 @@ class SuspectCreateView(generics.ListCreateAPIView):
         if serializer.is_valid():
             suspect=serializer.save(informer=request.user)
 
-            photos_files = request.data.getlist('photos_data')
+            photos_files = request.data.getlist('photos')
             print(photos_files)
             
             for photo_file in photos_files:

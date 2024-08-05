@@ -26,6 +26,5 @@ class SuspectSerializer(serializers.ModelSerializer):
             "time",
             "notes",
             "informer",
-            "national_id",
             "photos",
         ]
