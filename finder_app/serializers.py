@@ -13,7 +13,7 @@ class SuspectPhotoSerializer(serializers.ModelSerializer):
 
 
 class SuspectSerializer(serializers.ModelSerializer):
-    photos = SuspectPhotoSerializer(many=True, read_only=True)
+    photo_details = SuspectPhotoSerializer(many=True ,read_only=True)
     informer = serializers.StringRelatedField()
 
     class Meta:
@@ -24,7 +24,8 @@ class SuspectSerializer(serializers.ModelSerializer):
             "status",
             "where",
             "time",
+            "national_id",
             "notes",
             "informer",
-            "photos",
+            "photo_details",
         ]

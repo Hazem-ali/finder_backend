@@ -14,7 +14,7 @@ class SuspectCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         if self.request.user.is_supervisor:
             return Suspect.objects.all()
-        return Suspect.objects.filter(informer=self.request.user.id)
+        return Suspect.objects.filter(informer=self.request.user)
 
     def post(self, request, *args, **kwargs):
         print(request.data)

@@ -19,8 +19,6 @@ class Suspect(models.Model):
 
 
 class SuspectPhoto(models.Model):
-    # DONE change photo type to be imagefield
     photo = models.ImageField(upload_to="suspect_photos/", blank=True, null=True)
-    # photo = models.CharField(max_length=255, blank=True, null=True)
-    suspect = models.ForeignKey(Suspect, on_delete=models.CASCADE, related_name="photos")
+    suspect = models.ForeignKey(Suspect, on_delete=models.CASCADE, related_name="photo_details")
     created_at = models.DateTimeField(auto_now_add=True)
