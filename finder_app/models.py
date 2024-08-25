@@ -2,7 +2,7 @@ from django.db import models
 from user_app.models import User
 
 # Create your models here.
-
+# Before Removing Suspect Design
 
 class Suspect(models.Model):
     name = models.CharField(max_length=255)
