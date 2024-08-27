@@ -10,10 +10,8 @@ class UserSerializer(ModelSerializer):
         fields = [
             "first_name",
             "last_name",
-            "dob",
             "email",
             "phone",
-            "gender",
             "password",
         ]
 

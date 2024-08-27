@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from .models import Suspect, SuspectPhoto
+from .models import Contact, StatusHistory
 
 
-admin.site.register(Suspect)
-admin.site.register(SuspectPhoto)
+admin.site.register(Contact)
+admin.site.register(StatusHistory)

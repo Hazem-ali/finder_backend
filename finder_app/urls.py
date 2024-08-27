@@ -1,8 +1,7 @@
 from django.urls import path
-from .views import SuspectCreateView, SuspectRetrieveUpdateDestroyAPIView, SuspectPhotoAPIView
+from .views import ContactListCreateView, ContactRetrieveUpdateDestroyAPIView
 
 urlpatterns = [
-    path('', SuspectCreateView.as_view(), name='suspect-create'),
-    path('<int:pk>', SuspectRetrieveUpdateDestroyAPIView.as_view(), name='suspect-retrieve'),
-    path('photo/', SuspectPhotoAPIView.as_view(), name='suspect-retrieve'),
+    path('', ContactListCreateView.as_view(), name='contact-create'),
+    path('<int:pk>', ContactRetrieveUpdateDestroyAPIView.as_view(), name='contact-retrieve'),
 ]
