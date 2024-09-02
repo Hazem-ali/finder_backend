@@ -1,4 +1,7 @@
-FROM python:3.9
+FROM python:3.9-alpine
+
+# Required to run mysql in an alpine python
+RUN apk add --no-cache mysql-client mysql-dev gcc musl-dev
 
 WORKDIR /app
 

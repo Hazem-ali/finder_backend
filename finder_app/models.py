@@ -3,15 +3,28 @@ from user_app.models import User
 
 # Create your models here.
 
+
 class Contact(models.Model):
 
     name = models.CharField(max_length=255)
     national_id = models.CharField(max_length=14, unique=True)
-    father = models.ForeignKey('self', on_delete=models.CASCADE, related_name='children_of_father',blank=True, null=True)
-    mother = models.ForeignKey('self', on_delete=models.CASCADE, related_name='children_of_mother',blank=True, null=True)
+    father = models.ForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        related_name="children_of_father",
+        blank=True,
+        null=True,
+    )
+    mother = models.ForeignKey(
+        "self",
+        on_delete=models.CASCADE,
+        related_name="children_of_mother",
+        blank=True,
+        null=True,
+    )
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    photo = models.ImageField(upload_to="contact_photos/", blank=True, null=True)
+    image = models.ImageField(upload_to="contact_photos/", blank=True, null=True)
     dob = models.DateField(auto_now=False, auto_now_add=False, null=True)
     gender = models.CharField(max_length=1, null=True)
     status = models.CharField(max_length=255, null=True)
@@ -29,5 +42,3 @@ class StatusHistory(models.Model):
     contact = models.ForeignKey(Contact, on_delete=models.CASCADE)
     status = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
-
-

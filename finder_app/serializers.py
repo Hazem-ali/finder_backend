@@ -11,7 +11,9 @@ def is_valid_relationship(contact, relationship):
     return False
 
 
-class ContactCreateSerializer(serializers.ModelSerializer):
+class ContactSerializer(serializers.ModelSerializer):
+    father = serializers.CharField()
+    mother = serializers.CharField()
 
     class Meta:
         model = Contact
@@ -22,45 +24,38 @@ class ContactCreateSerializer(serializers.ModelSerializer):
             "mother",
             "national_id",
             "user",
-            "photo",
+            "image",
             "dob",
             "gender",
             "status",
         ]
 
     def validate(self, data):
-        print(dict(data))
-        father = Contact.objects.filter(national_id=data.get("father", None)).first()
-        mother = Contact.objects.filter(national_id=data.get("mother", None)).first()
-        if father and father.gender:
-            if not is_valid_relationship(father, "father"):
+        father_national_id = data.get("father")
+        mother_national_id = data.get("mother")
+
+        father = None
+        mother = None
+
+        if father_national_id:
+            father = Contact.objects.filter(national_id=father_national_id).first()
+
+            if father and father.gender and not is_valid_relationship(father, "father"):
                 raise serializers.ValidationError(
-                    "Error, You entered a female as a father"
-                )
-        if mother and mother.gender:
-            if not is_valid_relationship(mother, "mother"):
-                raise serializers.ValidationError(
-                    "Error, You entered a male as a mother"
+                    {"father": "Error, You entered a female as a father."}
                 )
 
+        if mother_national_id:
+            mother = Contact.objects.filter(national_id=mother_national_id).first()
+
+            if mother and mother.gender and not is_valid_relationship(mother, "mother"):
+                raise serializers.ValidationError(
+                    {"mother": "Error, You entered a male as a mother."}
+                )
+
+        data["father"] = father
+        data["mother"] = mother
         return data
-
-
-class ContactViewSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Contact
-        fields = [
-            "name",
-            "national_id",
-            "father",
-            "mother",
-            "user",
-            "photo",
-            "dob",
-            "gender",
-            "status",
-        ]
 
 
 class StatusHistorySerializer(serializers.ModelSerializer):
@@ -73,7 +68,7 @@ class StatusHistorySerializer(serializers.ModelSerializer):
             "father",
             "mother",
             "user",
-            "photo",
+            "image",
             "dob",
             "gender",
             "status",
