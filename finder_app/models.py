@@ -32,8 +32,6 @@ class Contact(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
-        if self.name:
-            return f"{self.national_id} ({self.name})"
         return f"{self.national_id}"
 
 

@@ -14,12 +14,35 @@ def is_valid_relationship(contact, relationship):
 class ContactSerializer(serializers.ModelSerializer):
     father = serializers.CharField()
     mother = serializers.CharField()
+    full_name = serializers.SerializerMethodField()
+
+
+    def get_full_name(self, obj):
+        # Return the full name (4 names)
+        full_name = ""
+
+        full_name += obj.name
+        parent = obj
+        i = 0
+        while i < 3:
+            parent = parent.father
+            if parent and parent.name:
+                full_name += f" {parent.name}"
+            else:
+                break
+
+        return full_name
+
+
+
+
 
     class Meta:
         model = Contact
         fields = [
             "id",
             "name",
+            "full_name",
             "father",
             "mother",
             "national_id",
