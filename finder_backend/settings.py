@@ -154,3 +154,5 @@ CORS_ALLOW_CREDENTIALS = True
 
 MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
+
+ML_URL = 'http://ml:5000/'

@@ -34,11 +34,7 @@ class User(AbstractUser):
 
     # TODO make is_supervisor default to be False
     is_supervisor = models.BooleanField(default=True)
-
-    # national_id = models.CharField(max_length=14)
-    # dob = models.DateField(auto_now=False, auto_now_add=False, null=True)
-    # photo = models.ImageField()
-    # gender = models.CharField(max_length=1)
+    role = models.CharField(max_length=50)
 
     password = models.CharField(max_length=255)
 

@@ -96,3 +96,6 @@ class StatusHistorySerializer(serializers.ModelSerializer):
             "gender",
             "status",
         ]
+
+class ImageUploadSerializer(serializers.Serializer):
+    image = serializers.ImageField()

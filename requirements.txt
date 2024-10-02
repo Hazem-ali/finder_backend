@@ -8,3 +8,4 @@ Faker==6.6.1
 djangorestframework-simplejwt
 drf-yasg
 Pillow
+requests

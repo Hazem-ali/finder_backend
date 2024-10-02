@@ -3,13 +3,12 @@ from rest_framework import permissions
 
         
         
-class IsSupervisorOrInformerOrReadOnly(permissions.BasePermission):
 
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        # Allow delete permissions for the informer
-        if request.method == 'DELETE':
-            return obj.informer == request.user
-        # Allow update permissions only for supervisors
-        return bool(request.user and request.user.is_supervisor)
+class IsSearcher(permissions.BasePermission):
+    message = "You do not have permission to perform searching"
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.role=="search")
+class IsCreator(permissions.BasePermission):
+    message = "You do not have permission to perform creating"
+    def has_permission(self, request, view):
+        return bool(request.user and request.user.role=="create")

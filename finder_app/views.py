@@ -1,23 +1,54 @@
 # views.py
+import requests
 from rest_framework import status, generics, filters
+from rest_framework.views import APIView
+from finder_backend.settings import ML_URL
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from .permissions import IsSearcher
 from .models import Contact, StatusHistory
 from .serializers import (
     ContactSerializer,
     StatusHistorySerializer,
+    ImageUploadSerializer,
 )
+
+import requests
+from rest_framework import generics, status
+from rest_framework.response import Response
 
 
 class ContactListCreateView(generics.ListCreateAPIView):
-    # permission_classes = [IsAuthenticated]
     serializer_class = ContactSerializer
     queryset = Contact.objects.all()
 
     def post(self, request, *args, **kwargs):
         data = request.data
+        print(data)
+        print(data.get("image"))
+
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
+
+            files = {"image": data["image"]}
+            try:
+                flask_response = requests.post(f"{ML_URL}/images/encode", files=files)
+                print("FUCKIN========================")
+                print(f"{flask_response}")
+                flask_response.raise_for_status()
+
+            except requests.exceptions.RequestException as e:
+                return Response(
+                    {"error": f"Error communicating with ML model: {e}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+            encoded_image = flask_response.json()
+            if not encoded_image or encoded_image == -1:
+                return Response(
+                    {"error": "Image has no faces"}, status=status.HTTP_400_BAD_REQUEST
+                )
+
             father_created = False
             mother_created = False
 
@@ -39,7 +70,20 @@ class ContactListCreateView(generics.ListCreateAPIView):
                 )
                 mother_created = True
 
-            serializer.save(father=father, mother=mother)
+            contact = serializer.save(father=father, mother=mother)
+
+            image_encoding_data = {"id": contact.id, "encoded_image": encoded_image}
+
+            try:
+                flask_save_response = requests.post(
+                    f"{ML_URL}/contacts/save", json=image_encoding_data
+                )
+                flask_save_response.raise_for_status()
+            except requests.exceptions.RequestException as e:
+                return Response(
+                    {"error": f"Error communicating with ML model: {e}"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
 
             response_data = dict(serializer.data)
             response_data["father_created"] = father_created
@@ -49,6 +93,7 @@ class ContactListCreateView(generics.ListCreateAPIView):
             return Response(
                 response_data, status=status.HTTP_201_CREATED, headers=headers
             )
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -59,7 +104,45 @@ class ContactRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView)
 
 
 class ContactSearchView(generics.ListAPIView):
+    # permission_classes = [IsSearcher]
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
     filter_backends = [filters.SearchFilter]
-    search_fields = ['name', 'national_id']
+    search_fields = ["name", "national_id"]
+
+
+class ContactImageSearchView(APIView):
+    # permission_classes = [IsSearcher]
+
+    def post(self, request, *args, **kwargs):
+        image_serializer = ImageUploadSerializer(data=request.data)
+
+        if image_serializer.is_valid():
+            image_file = request.data.get("image")
+            # Prepare the file for forwarding
+            files = {"image": image_file}
+
+            try:
+                flask_response = requests.post(ML_URL, files=files)
+                flask_response.raise_for_status()
+                found_ids = flask_response.json()
+
+                if found_ids:
+                    contacts = Contact.objects.filter(pk__in=found_ids)
+                    contact_serializer = ContactSerializer(
+                        contacts, many=True, context={"request": request}
+                    )
+                    print("contacts: ", contacts)
+                    print("contact_serializer.data: ", contact_serializer.data)
+
+                    return Response(contact_serializer.data, status=status.HTTP_200_OK)
+                return Response([], status=status.HTTP_204_NO_CONTENT)
+
+            except requests.exceptions.RequestException as e:
+                print(f"Error communicating with Flask server: {e}")
+                return Response(
+                    {"message": "Error communicating with Flask server"},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                )
+
+        return Response(image_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
