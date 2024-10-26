@@ -11,31 +11,56 @@ def is_valid_relationship(contact, relationship):
     return False
 
 
+class ParentSerializer(serializers.ModelSerializer):
+    
+
+    class Meta:
+        model = Contact
+        fields = ["id", "name", "image", "national_id"]
+
+
+
+class ChildSerializer(serializers.ModelSerializer):
+    
+
+    class Meta:
+        model = Contact
+        fields = ["id", "name", "image", "national_id"]
+
+
+
 class ContactSerializer(serializers.ModelSerializer):
-    father = serializers.CharField()
-    mother = serializers.CharField()
+    father = ParentSerializer(read_only=True)
+    mother = ParentSerializer(read_only=True)
+    children = serializers.SerializerMethodField()
     full_name = serializers.SerializerMethodField()
+    # image = serializers.SerializerMethodField()
+
+    def get_children(self, obj):
+        children = None
+        if obj.gender == "m":
+            children = Contact.objects.filter(father=obj)
+        elif obj.gender == "f":
+            children = Contact.objects.filter(mother=obj)
+
+        if children:
+            return ChildSerializer(children, many=True).data
+        return None
 
 
     def get_full_name(self, obj):
-        # Return the full name (4 names)
-        full_name = ""
-
-        full_name += obj.name
-        parent = obj
+        # Return the full name (up to 4 names including father/grandfather names)
+        full_name = obj.name
+        parent = obj.father  # Start with the father
         i = 0
-        while i < 3:
-            parent = parent.father
-            if parent and parent.name:
+
+        while parent and i < 3:
+            if parent.name:
                 full_name += f" {parent.name}"
-            else:
-                break
+            parent = parent.father  # Move to the next father in the chain
+            i += 1
 
         return full_name
-
-
-
-
 
     class Meta:
         model = Contact
@@ -45,6 +70,7 @@ class ContactSerializer(serializers.ModelSerializer):
             "full_name",
             "father",
             "mother",
+            "children",
             "national_id",
             "user",
             "image",
@@ -52,6 +78,7 @@ class ContactSerializer(serializers.ModelSerializer):
             "gender",
             "status",
         ]
+        # depth=1
 
     def validate(self, data):
         father_national_id = data.get("father")
@@ -59,7 +86,6 @@ class ContactSerializer(serializers.ModelSerializer):
 
         father = None
         mother = None
-
         if father_national_id:
             father = Contact.objects.filter(national_id=father_national_id).first()
 
@@ -82,20 +108,10 @@ class ContactSerializer(serializers.ModelSerializer):
 
 
 class StatusHistorySerializer(serializers.ModelSerializer):
-
     class Meta:
         model = StatusHistory
-        fields = [
-            "name",
-            "national_id",
-            "father",
-            "mother",
-            "user",
-            "image",
-            "dob",
-            "gender",
-            "status",
-        ]
+        fields = '__all__'
+
 
 class ImageUploadSerializer(serializers.Serializer):
     image = serializers.ImageField()

@@ -23,11 +23,17 @@ class Contact(models.Model):
         null=True,
     )
 
+    contact_status = (
+        ('MISSING', 'Missing'),
+        ('FOUND', 'Found'),
+        ('NORMAL', 'Normal'),
+    )
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     image = models.ImageField(upload_to="contact_photos/", blank=True, null=True)
     dob = models.DateField(auto_now=False, auto_now_add=False, null=True)
     gender = models.CharField(max_length=1, null=True)
-    status = models.CharField(max_length=255, null=True)
+    status = models.CharField(max_length=255, null=True, choices=contact_status)
     status_last_updated = models.DateTimeField(auto_now=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

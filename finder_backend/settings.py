@@ -156,3 +156,4 @@ MEDIA_ROOT = BASE_DIR / 'media'
 MEDIA_URL = '/media/'
 
 ML_URL = 'http://ml:5000/'
+# APPEND_SLASH=False
